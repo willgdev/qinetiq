@@ -1,0 +1,28 @@
+﻿<Window x:Class="qinetiq.ConnWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:qinetiq"
+        mc:Ignorable="d"
+        Title="Connection" Height="180" Width="260">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Label Grid.Row="0" Grid.Column="0" Margin="0,5,0,0">IP address</Label>
+        <TextBox Grid.Row="0"  Grid.Column="1" Margin="0,5,0,0"></TextBox>
+        <Label Grid.Row="1" Grid.Column="0" Margin="0,5,0,0">Receive Port</Label>
+        <TextBox Grid.Row="1"  Grid.Column="1" Margin="0,5,0,0"></TextBox>
+        <Label Grid.Row="2" Grid.Column="0" Margin="0,5,0,0">Destination Port</Label>
+        <TextBox Grid.Row="2"  Grid.Column="1" Margin="0,5,0,0"></TextBox>
+        <Button Grid.Row="3" Grid.Column="1" Margin="0,5,0,0">Connect</Button>
+    </Grid>
+</Window>
