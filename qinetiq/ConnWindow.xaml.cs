@@ -6,8 +6,7 @@ using System.ComponentModel;
 namespace qinetiq {
 
 
-    public partial class ConnWindow : Window, IDisposable
-    {
+    public partial class ConnWindow : Window {
 
 
         private IPresenter iPresenter;
@@ -44,9 +43,11 @@ namespace qinetiq {
         }
 
 
-        public void Dispose() {
+        protected override void OnClosed(EventArgs e) {
 
             iPresenter.OnOpenConnWindow -= hOpenConnWindow;
+
+            base.OnClosed(e);
 
         }
 
