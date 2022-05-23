@@ -20,6 +20,8 @@ namespace qinetiq {
 
             this.iPresenter = iPresenter;
 
+            DataContext = iPresenter.model;
+
             hOpenConnWindow = new HandleOpenConnWindow(show);
 
             this.iPresenter.OnOpenConnWindow += hOpenConnWindow;

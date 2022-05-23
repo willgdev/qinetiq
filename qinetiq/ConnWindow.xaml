@@ -18,11 +18,11 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Margin="0,5,0,0">IP address</Label>
-        <TextBox Grid.Row="0"  Grid.Column="1" Margin="0,5,0,0"></TextBox>
+        <TextBox Grid.Row="0"  Grid.Column="1" Margin="0,5,0,0" Text="{Binding ipAddress, Mode=TwoWay}"></TextBox>
         <Label Grid.Row="1" Grid.Column="0" Margin="0,5,0,0">Receive Port</Label>
-        <TextBox Grid.Row="1"  Grid.Column="1" Margin="0,5,0,0"></TextBox>
+        <TextBox Grid.Row="1"  Grid.Column="1" Margin="0,5,0,0" Text="{Binding receivePort, Mode=TwoWay}"></TextBox>
         <Label Grid.Row="2" Grid.Column="0" Margin="0,5,0,0">Destination Port</Label>
-        <TextBox Grid.Row="2"  Grid.Column="1" Margin="0,5,0,0"></TextBox>
+        <TextBox Grid.Row="2"  Grid.Column="1" Margin="0,5,0,0"  Text="{Binding destPort, Mode=TwoWay}"></TextBox>
         <Button Grid.Row="3" Grid.Column="1" Margin="0,5,0,0">Connect</Button>
     </Grid>
 </Window>

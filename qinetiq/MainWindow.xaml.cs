@@ -15,6 +15,8 @@ namespace qinetiq {
 
             this.iPresenter = iPresenter;
 
+            DataContext = iPresenter.model;
+
             InitializeComponent();
 
         }

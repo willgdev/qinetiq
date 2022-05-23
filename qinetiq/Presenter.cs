@@ -1,4 +1,4 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
 
 
 namespace qinetiq {
@@ -10,6 +10,8 @@ namespace qinetiq {
 
         event HandleOpenConnWindow OnOpenConnWindow;
 
+        Model model { get; set; }
+
     }
 
 
@@ -20,6 +22,15 @@ namespace qinetiq {
 
 
         public event HandleOpenConnWindow OnOpenConnWindow;
+
+        public Model model { get; set; }
+
+
+        public Presenter(Model model) {
+        
+            this.model = model;
+
+        }
 
 
         public void openConnWindow() {

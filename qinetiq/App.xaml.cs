@@ -21,6 +21,8 @@ namespace qinetiq {
 
             services.AddSingleton<ConnWindow>();
 
+            services.AddSingleton<Model>();
+
             serviceProvider = services.BuildServiceProvider();
 
         }
