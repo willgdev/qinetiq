@@ -23,6 +23,8 @@ namespace qinetiq {
 
             services.AddSingleton<Model>();
 
+            services.AddSingleton<Connection>();
+
             serviceProvider = services.BuildServiceProvider();
 
         }

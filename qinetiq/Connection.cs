@@ -1,4 +1,9 @@
-﻿using System.Threading;
+﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using System.Windows;
 
 
 //one thread to receive, another to send on a different port
@@ -11,10 +16,22 @@ namespace qinetiq {
 
         private IPresenter iPresenter;
 
+        private HandleStartSend hStartSend;
+
+        private HandleCloseApp hCloseApp;
+
 
         public Connection(IPresenter iPresenter) {
 
             this.iPresenter = iPresenter;
+
+            hStartSend = new HandleStartSend(send);
+
+            hCloseApp = new HandleCloseApp(close);
+
+            this.iPresenter.OnStartSend += hStartSend;
+
+            this.iPresenter.OnCloseApp += hCloseApp;
 
         }
 
@@ -41,6 +58,15 @@ namespace qinetiq {
         }
 
 
+        public void close() {
+
+            this.iPresenter.OnStartSend -= hStartSend;
+
+            this.iPresenter.OnCloseApp -= hCloseApp;
+
+        }
+
+
         private void receiveData() {
 
 
@@ -50,7 +76,31 @@ namespace qinetiq {
 
         private void sendData(string msg) {
 
+            try {
+
+                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+                byte[] sendBytes = Encoding.UTF8.GetBytes(msg);
+
+                IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(iPresenter.model.ipAddress), iPresenter.model.destPort);
+
+                socket.SendTo(sendBytes, ipEndPoint);
+
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onDataSent(); }));
+
+                socket.Shutdown(SocketShutdown.Both);
+
+                socket.Close();
+
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onSentClosed(); }));
+
+            }
+
+            catch (Exception e) when (e is SocketException || e is ThreadInterruptedException) {
+
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onSendError(); }));
             
+            }
 
         }
 
