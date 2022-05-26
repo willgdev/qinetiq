@@ -107,6 +107,12 @@ namespace qinetiq {
 
         protected override void OnClosed(EventArgs e) {
 
+            iPresenter.OnDataReceived -= hDataReceived;
+
+            iPresenter.OnDisconnected -= hDisconnected;
+
+            iPresenter.OnReceiveError -= hReceiveError;
+
             iPresenter.OnSendError -= hSendError;
 
             iPresenter.OnDataSent -= hDataSent;
