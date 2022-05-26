@@ -20,6 +20,10 @@ namespace qinetiq {
 
         private HandleCloseApp hCloseApp;
 
+        private volatile bool listen;
+
+        private const int udpTimeout = 3000;
+
 
         public Connection(IPresenter iPresenter) {
 
@@ -60,25 +64,63 @@ namespace qinetiq {
 
         public void close() {
 
-            this.iPresenter.OnStartSend -= hStartSend;
+            iPresenter.OnStartSend -= hStartSend;
 
-            this.iPresenter.OnCloseApp -= hCloseApp;
+            iPresenter.OnCloseApp -= hCloseApp;
 
         }
 
 
         private void receiveData() {
 
+            UdpClient? udpClient = null;
 
+            try {
+
+                udpClient = new UdpClient(iPresenter.model.receivePort);
+
+                IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(iPresenter.model.ipAddress), iPresenter.model.receivePort);
+
+                while (listen) {
+
+                    byte[] data = udpClient.Receive(ref ipEndPoint);
+
+                    Application.Current.Dispatcher.Invoke(
+                        new Action(() => { iPresenter.onDataReceived(Encoding.Default.GetString(data)); })
+                    );
+
+                }
+
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onDisconnected(); }));
+
+            }
+
+            catch (Exception e) when (
+                e is SocketException ||
+                e is ObjectDisposedException ||
+                e is ThreadInterruptedException
+            ) {
+
+                listen = false;
+
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onReceiveError(e.GetType); }));
+
+            }
+
+            if (udpClient != null) udpClient.Close();
 
         }
 
 
         private void sendData(string msg) {
 
+            Socket? socket = null;
+
             try {
 
-                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+                socket.SendTimeout = udpTimeout;
 
                 byte[] sendBytes = Encoding.UTF8.GetBytes(msg);
 
@@ -88,12 +130,6 @@ namespace qinetiq {
 
                 Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onDataSent(); }));
 
-                socket.Shutdown(SocketShutdown.Both);
-
-                socket.Close();
-
-                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onSentClosed(); }));
-
             }
 
             catch (Exception e) when (e is SocketException || e is ThreadInterruptedException) {
@@ -101,6 +137,8 @@ namespace qinetiq {
                 Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onSendError(); }));
             
             }
+
+            if (socket != null) socket.Close();
 
         }
 

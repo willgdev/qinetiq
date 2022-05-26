@@ -3,9 +3,32 @@
 namespace qinetiq {
 
 
+    public delegate void HandleOpenConnWindow();
+
+    public delegate void HandleDataReceived(string msg);
+
+    public delegate void HandleDisconnected();
+
+    public delegate void HandleReceiveError(string error);
+
+    public delegate void HandleStartSend(string msg);
+
+    public delegate void HandleDataSent();
+
+    public delegate void HandleSendError();
+
+    public delegate void HandleCloseApp();
+
+
     public interface IPresenter {
 
         void openConnWindow();
+
+        void onDataReceived(string msg);
+
+        void onDisconnected();
+
+        void onReceiveError(string error);
 
         void sendData();
 
@@ -13,19 +36,21 @@ namespace qinetiq {
 
         void onSendError();
 
-        void onSentClosed();
-
         void closeApp();
 
         event HandleOpenConnWindow OnOpenConnWindow;
+
+        event HandleDataReceived OnDataReceived;
+
+        event HandleDisconnected OnDisconnected;
+
+        event HandleReceiveError OnReceiveError;
 
         event HandleStartSend OnStartSend;
 
         event HandleSendError OnSendError;
 
         event HandleDataSent OnDataSent;
-
-        event HandleSendClosed OnSendClosed;
 
         event HandleCloseApp OnCloseApp;
 
@@ -34,23 +59,16 @@ namespace qinetiq {
     }
 
 
-    public delegate void HandleOpenConnWindow();
-
-    public delegate void HandleStartSend(string msg);
-
-    public delegate void HandleDataSent();
-
-    public delegate void HandleSendError();
-
-    public delegate void HandleSendClosed();
-
-    public delegate void HandleCloseApp();
-
-
     class Presenter : IPresenter {
 
 
         public event HandleOpenConnWindow OnOpenConnWindow;
+
+        public event HandleDataReceived OnDataReceived;
+
+        public event HandleDisconnected OnDisconnected;
+
+        public event HandleReceiveError OnReceiveError;
 
         public event HandleStartSend OnStartSend;
 
@@ -58,13 +76,11 @@ namespace qinetiq {
 
         public event HandleSendError OnSendError;
 
-        public event HandleSendClosed OnSendClosed;
-
         public event HandleCloseApp OnCloseApp;
 
         public Model model { get; set; }
 
-        private enum State { IDLE, SENDING, CONNECTING, SETTINGS }
+        private enum State { DISCONNECTED, CONNECTED, SENDING, CONNECTING }
 
         private State state;
 
@@ -72,8 +88,6 @@ namespace qinetiq {
         public Presenter(Model model) {
         
             this.model = model;
-
-            state = State.IDLE;
 
         }
 
@@ -85,9 +99,28 @@ namespace qinetiq {
         }
 
 
-        public void sendData() {
+        public void onDataReceived(string msg) {
 
-            state = State.SENDING;
+            OnDataReceived(msg);
+        
+        }
+
+
+        public void onDisconnected() {
+
+            OnDisconnected();
+
+        }
+
+
+        public void onReceiveError(string error) {
+
+            onReceiveError(error);
+
+        }
+
+
+        public void sendData() {
 
             OnStartSend(model.message);
 
@@ -98,23 +131,12 @@ namespace qinetiq {
 
             OnDataSent();
 
-            state = State.IDLE;
-
         }
 
 
         public void onSendError() {
 
             OnSendError();
-
-            state = State.IDLE;
-
-        }
-
-
-        public void onSentClosed() {
-
-            OnSendClosed();
 
         }
 

@@ -10,9 +10,13 @@ namespace qinetiq {
 
         private IPresenter iPresenter;
 
-        private HandleDataSent hDataSent;
+        private HandleDataReceived hDataReceived;
 
-        private HandleSendClosed hSendClosed;
+        private HandleDisconnected hDisconnected;
+
+        private HandleReceiveError hReceiveError;
+
+        private HandleDataSent hDataSent;
 
         private HandleSendError hSendError;
 
@@ -25,13 +29,21 @@ namespace qinetiq {
 
             this.iPresenter.OnDataSent += hDataSent;
 
-            hSendClosed = new HandleSendClosed(onSendClosed);
-
-            this.iPresenter.OnSendClosed += hSendClosed;
-
             hSendError = new HandleSendError(onSendError);
 
             this.iPresenter.OnSendError += hSendError;
+
+            hDataReceived = new HandleDataReceived(onDataReceived);
+
+            this.iPresenter.OnDataReceived += hDataReceived;
+
+            hDisconnected = new HandleDisconnected(onDisconnected);
+
+            this.iPresenter.OnDisconnected += hDisconnected;
+
+            hReceiveError = new HandleReceiveError(onReceiveError);
+
+            this.iPresenter.OnReceiveError += hReceiveError;
 
             DataContext = iPresenter.model;
 
@@ -43,6 +55,24 @@ namespace qinetiq {
         private void openConnWindow(object o, RoutedEventArgs r) {
 
             iPresenter.openConnWindow();
+
+        }
+
+
+        private void onDataReceived(string msg) {
+
+
+        }
+
+
+        private void onDisconnected() {
+
+
+        }
+
+
+        private void onReceiveError(string error) {
+
 
         }
 
@@ -76,8 +106,6 @@ namespace qinetiq {
 
 
         protected override void OnClosed(EventArgs e) {
-
-            iPresenter.OnSendClosed -= hSendClosed;
 
             iPresenter.OnSendError -= hSendError;
 
