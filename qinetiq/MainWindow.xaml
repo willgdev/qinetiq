@@ -18,7 +18,7 @@
         <Label Grid.Row="0" Grid.Column="0">Messages</Label>
         <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding messages, Mode=TwoWay}"/>
         <StackPanel Grid.Row="1" Grid.Column="1" Margin="5,0,0,0">
-            <TextBox Text="{Binding message, Mode=TwoWay}"></TextBox>
+            <TextBox Text="{Binding message, Mode=TwoWay, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"></TextBox>
             <Button Margin="0,5,0,0">Send</Button>
             <Button Margin="0,5,0,0" Click="openConnWindow">Connection...</Button>
         </StackPanel>

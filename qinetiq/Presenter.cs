@@ -5,6 +5,8 @@ namespace qinetiq {
 
     public delegate void HandleOpenConnWindow();
 
+    public delegate void HandleConnect();
+
     public delegate void HandleDataReceived(string msg);
 
     public delegate void HandleDisconnected();
@@ -24,6 +26,8 @@ namespace qinetiq {
 
         void openConnWindow();
 
+        void connect();
+
         void onDataReceived(string msg);
 
         void onDisconnected();
@@ -39,6 +43,8 @@ namespace qinetiq {
         void closeApp();
 
         event HandleOpenConnWindow OnOpenConnWindow;
+
+        event HandleConnect OnConnect;
 
         event HandleDataReceived OnDataReceived;
 
@@ -63,6 +69,8 @@ namespace qinetiq {
 
 
         public event HandleOpenConnWindow OnOpenConnWindow;
+
+        public event HandleConnect OnConnect;
 
         public event HandleDataReceived OnDataReceived;
 
@@ -95,6 +103,13 @@ namespace qinetiq {
         public void openConnWindow() {
 
             OnOpenConnWindow();
+
+        }
+
+
+        public void connect() {
+
+            OnConnect();
 
         }
 
@@ -145,7 +160,7 @@ namespace qinetiq {
 
             OnCloseApp();
 
-        } 
+        }
 
 
     }

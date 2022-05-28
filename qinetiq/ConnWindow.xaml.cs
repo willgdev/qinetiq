@@ -3,6 +3,7 @@ using System.Windows;
 using System.ComponentModel;
 
 
+//TextChanged + Validation.GetHasError(ctrl) for each input and set [connect/cancel/text boxes].IsEnabled accordingly
 namespace qinetiq {
 
 
@@ -13,8 +14,14 @@ namespace qinetiq {
 
         private HandleOpenConnWindow hOpenConnWindow;
 
+        private enum S { INVALID, VALID, CONNECTED }
+
+        private S state;
+
 
         public ConnWindow(IPresenter iPresenter) {
+
+            state = S.INVALID;
 
             InitializeComponent();
 
@@ -25,6 +32,27 @@ namespace qinetiq {
             hOpenConnWindow = new HandleOpenConnWindow(show);
 
             this.iPresenter.OnOpenConnWindow += hOpenConnWindow;
+
+        }
+
+
+        private void connect(object o, RoutedEventArgs r) {
+
+            iPresenter.connect();
+
+        }
+
+
+        private void cancel(object o, RoutedEventArgs r) {
+
+            //iPresenter.cancel();
+
+        }
+
+
+        private void onChange(object o, RoutedEventArgs r) {
+
+            //
 
         }
 

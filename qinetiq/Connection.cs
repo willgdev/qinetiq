@@ -16,6 +16,8 @@ namespace qinetiq {
 
         private IPresenter iPresenter;
 
+        private HandleConnect hConnect;
+
         private HandleStartSend hStartSend;
 
         private HandleCloseApp hCloseApp;
@@ -29,6 +31,8 @@ namespace qinetiq {
 
             this.iPresenter = iPresenter;
 
+            hConnect = new HandleConnect(receive);
+
             hStartSend = new HandleStartSend(send);
 
             hCloseApp = new HandleCloseApp(close);
@@ -41,6 +45,8 @@ namespace qinetiq {
 
 
         public void receive() {
+
+            listen = true;
 
             Thread receiveThread = new Thread(receiveData);
 
@@ -64,6 +70,8 @@ namespace qinetiq {
 
         public void close() {
 
+            iPresenter.OnConnect -= hConnect;
+
             iPresenter.OnStartSend -= hStartSend;
 
             iPresenter.OnCloseApp -= hCloseApp;
@@ -79,15 +87,23 @@ namespace qinetiq {
 
                 udpClient = new UdpClient(iPresenter.model.receivePort);
 
+                udpClient.Client.ReceiveTimeout = udpTimeout;
+
                 IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(iPresenter.model.ipAddress), iPresenter.model.receivePort);
 
                 while (listen) {
 
-                    byte[] data = udpClient.Receive(ref ipEndPoint);
+                    try {
 
-                    Application.Current.Dispatcher.Invoke(
-                        new Action(() => { iPresenter.onDataReceived(Encoding.Default.GetString(data)); })
-                    );
+                        byte[] data = udpClient.Receive(ref ipEndPoint);
+
+                        Application.Current.Dispatcher.Invoke(
+                            new Action(() => { iPresenter.onDataReceived(Encoding.Default.GetString(data)); })
+                        );
+
+                    }
+
+                    catch (SocketException e) { if (e.SocketErrorCode != SocketError.TimedOut) throw; }
 
                 }
 
@@ -103,7 +119,7 @@ namespace qinetiq {
 
                 listen = false;
 
-                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onReceiveError(e.GetType); }));
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onReceiveError(e.GetType().ToString()); }));
 
             }
 
