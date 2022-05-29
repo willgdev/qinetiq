@@ -19,11 +19,11 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Margin="0,5,0,0">IP address</Label>
-        <TextBox Grid.Row="0"  Grid.Column="1" Margin="0,5,0,0" Text="{Binding ipAddress, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" Name="ipTxt"></TextBox>
+        <TextBox Grid.Row="0"  Grid.Column="1" Margin="0,5,0,0" Text="{Binding ipAddress, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" Name="ipTxt" TextChanged="onChange"></TextBox>
         <Label Grid.Row="1" Grid.Column="0" Margin="0,5,0,0">Receive port</Label>
-        <TextBox Grid.Row="1"  Grid.Column="1" Margin="0,5,0,0" Text="{Binding receivePort, Mode=TwoWay, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Name="receiveTxt"></TextBox>
+        <TextBox Grid.Row="1"  Grid.Column="1" Margin="0,5,0,0" Text="{Binding receivePort, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" Name="receiveTxt" TextChanged="onChange"></TextBox>
         <Label Grid.Row="2" Grid.Column="0" Margin="0,5,0,0">Destination port</Label>
-        <TextBox Grid.Row="2"  Grid.Column="1" Margin="0,5,0,0"  Text="{Binding destPort, Mode=TwoWay, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Name="destTxt"></TextBox>
+        <TextBox Grid.Row="2"  Grid.Column="1" Margin="0,5,0,0"  Text="{Binding destPort, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" Name="destTxt" TextChanged="onChange"></TextBox>
         <Button Grid.Row="3" Grid.Column="1" Margin="0,5,0,0" Click="connect" Name="connectBtn">Connect</Button>
         <Button Grid.Row="4" Grid.Column="1" Margin="0,5,0,0" Click="cancel" Name="ccancelBtn">Cancel</Button>
     </Grid>

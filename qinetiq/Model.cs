@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
@@ -15,11 +16,13 @@ namespace qinetiq {
 
         public string ipAddress { get; set; } = "0.0.0.0";
 
-        public int receivePort { get; set; }
+        public int receivePort { get; set; } = 11000;
 
-        public int destPort { get; set; }
+        public int destPort { get; set; } = 11001;
 
         private Dictionary<string, Func<string?>> valids;
+
+        private Dictionary<string, string?> validConn;
 
         private Regex ipRegex = new Regex(@"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$");
 
@@ -42,13 +45,32 @@ namespace qinetiq {
                 }
             };
 
+            validConn =
+                new Dictionary<string, string?> { { "ipAddress", null }, { "receivePort", null }, { "destPort", null } };
+
         }
 
 
-        public string this[string id] { get { return valids[id](); } }
+        public string this[string id] {
+            
+            get {
+
+                string? res = valids[id]();
+
+                if (validConn.ContainsKey(id)) validConn[id] = res;
+                
+                return res;
+            
+            }
+        
+        }
 
 
-        public string Error { get { return null; } }
+        public string Error {
+            
+            get { return validConn.Values.ToList().Where(x => x != null).DefaultIfEmpty(null).First(); }
+        
+        }
 
 
     }

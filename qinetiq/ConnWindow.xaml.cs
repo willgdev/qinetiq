@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.ComponentModel;
+using System.Windows.Controls;
 
 
 //TextChanged + Validation.GetHasError(ctrl) for each input and set [connect/cancel/text boxes].IsEnabled accordingly
@@ -52,7 +53,13 @@ namespace qinetiq {
 
         private void onChange(object o, RoutedEventArgs r) {
 
-            //
+            receiveTxt.GetBindingExpression(TextBox.TextProperty).UpdateSource();
+
+            destTxt.GetBindingExpression(TextBox.TextProperty).UpdateSource();
+
+            bool connValid = iPresenter.model.Error == null;
+
+            return;
 
         }
 
