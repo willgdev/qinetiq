@@ -7,17 +7,9 @@ namespace qinetiq {
 
     public delegate void HandleConnect();
 
-    public delegate void HandleDataReceived(string msg);
-
-    public delegate void HandleDisconnected();
-
-    public delegate void HandleReceiveError(string error);
-
     public delegate void HandleStartSend(string msg);
 
-    public delegate void HandleDataSent();
-
-    public delegate void HandleSendError();
+    public delegate void HandleDisconnect();
 
     public delegate void HandleCloseApp();
 
@@ -28,17 +20,9 @@ namespace qinetiq {
 
         void connect();
 
-        void onDataReceived(string msg);
-
-        void onDisconnected();
-
-        void onReceiveError(string error);
+        void disconnect();
 
         void sendData();
-
-        void onDataSent();
-
-        void onSendError();
 
         void closeApp();
 
@@ -46,17 +30,9 @@ namespace qinetiq {
 
         event HandleConnect OnConnect;
 
-        event HandleDataReceived OnDataReceived;
-
-        event HandleDisconnected OnDisconnected;
-
-        event HandleReceiveError OnReceiveError;
-
         event HandleStartSend OnStartSend;
 
-        event HandleSendError OnSendError;
-
-        event HandleDataSent OnDataSent;
+        event HandleDisconnect OnDisconnect;
 
         event HandleCloseApp OnCloseApp;
 
@@ -72,25 +48,13 @@ namespace qinetiq {
 
         public event HandleConnect OnConnect;
 
-        public event HandleDataReceived OnDataReceived;
-
-        public event HandleDisconnected OnDisconnected;
-
-        public event HandleReceiveError OnReceiveError;
-
         public event HandleStartSend OnStartSend;
 
-        public event HandleDataSent OnDataSent;
-
-        public event HandleSendError OnSendError;
+        public event HandleDisconnect OnDisconnect;
 
         public event HandleCloseApp OnCloseApp;
 
         public Model model { get; set; }
-
-        private enum State { DISCONNECTED, CONNECTED, SENDING, CONNECTING }
-
-        private State state;
 
 
         public Presenter(Model model) {
@@ -109,49 +73,25 @@ namespace qinetiq {
 
         public void connect() {
 
+            model.onConnect();
+
             OnConnect();
-
-        }
-
-
-        public void onDataReceived(string msg) {
-
-            OnDataReceived(msg);
-        
-        }
-
-
-        public void onDisconnected() {
-
-            OnDisconnected();
-
-        }
-
-
-        public void onReceiveError(string error) {
-
-            onReceiveError(error);
 
         }
 
 
         public void sendData() {
 
+            model.onStartSend();
+
             OnStartSend(model.message);
 
         }
 
 
-        public void onDataSent() {
+        public void disconnect() {
 
-            OnDataSent();
-
-        }
-
-
-        public void onSendError() {
-
-            OnSendError();
+            OnDisconnect();
 
         }
 

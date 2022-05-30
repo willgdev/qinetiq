@@ -20,6 +20,8 @@ namespace qinetiq {
 
         private HandleStartSend hStartSend;
 
+        private HandleDisconnect hDisconnect;
+
         private HandleCloseApp hCloseApp;
 
         private volatile bool listen;
@@ -35,9 +37,15 @@ namespace qinetiq {
 
             hStartSend = new HandleStartSend(send);
 
+            hDisconnect = new HandleDisconnect(disconnect);
+
             hCloseApp = new HandleCloseApp(close);
 
+            this.iPresenter.OnConnect += hConnect;
+
             this.iPresenter.OnStartSend += hStartSend;
+
+            this.iPresenter.OnDisconnect += hDisconnect;
 
             this.iPresenter.OnCloseApp += hCloseApp;
 
@@ -68,11 +76,20 @@ namespace qinetiq {
         }
 
 
+        public void disconnect() {
+
+            listen = false;
+
+        }
+
+
         public void close() {
 
             iPresenter.OnConnect -= hConnect;
 
             iPresenter.OnStartSend -= hStartSend;
+
+            iPresenter.OnDisconnect -= hDisconnect;
 
             iPresenter.OnCloseApp -= hCloseApp;
 
@@ -98,7 +115,7 @@ namespace qinetiq {
                         byte[] data = udpClient.Receive(ref ipEndPoint);
 
                         Application.Current.Dispatcher.Invoke(
-                            new Action(() => { iPresenter.onDataReceived(Encoding.Default.GetString(data)); })
+                            new Action(() => { iPresenter.model.onDataReceived(Encoding.Default.GetString(data)); })
                         );
 
                     }
@@ -107,7 +124,7 @@ namespace qinetiq {
 
                 }
 
-                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onDisconnected(); }));
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.model.onDisconnected(); }));
 
             }
 
@@ -119,7 +136,9 @@ namespace qinetiq {
 
                 listen = false;
 
-                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onReceiveError(e.GetType().ToString()); }));
+                Application.Current.Dispatcher.Invoke(new Action(() => {
+                    iPresenter.model.onReceiveError(e.GetType().ToString());
+                }));
 
             }
 
@@ -144,13 +163,15 @@ namespace qinetiq {
 
                 socket.SendTo(sendBytes, ipEndPoint);
 
-                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onDataSent(); }));
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.model.onDataSent(msg); }));
 
             }
 
             catch (Exception e) when (e is SocketException || e is ThreadInterruptedException) {
 
-                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onSendError(); }));
+                Application.Current.Dispatcher.Invoke(new Action(() => {
+                    iPresenter.model.onSendError(e.GetType().ToString());
+                }));
             
             }
 

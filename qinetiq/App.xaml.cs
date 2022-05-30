@@ -36,6 +36,8 @@ namespace qinetiq {
 
             serviceProvider.GetService<ConnWindow>();
 
+            serviceProvider.GetService<Connection>();
+
         }
 
 

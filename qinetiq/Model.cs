@@ -3,12 +3,31 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
-
+using System.Runtime.CompilerServices;
 
 namespace qinetiq {
 
 
-    public class Model : IDataErrorInfo {
+    public interface IConnection {
+
+        void onConnect();
+
+        void onDataReceived(string msg);
+
+        void onReceiveError(string error);
+
+        void onStartSend();
+
+        void onDataSent(string msg);
+
+        void onSendError(string msg);
+
+        void onDisconnected();
+
+    }
+
+
+    public class Model : IDataErrorInfo, IConnection, INotifyPropertyChanged {
 
         public string message { get; set; } = string.Empty;
 
@@ -19,6 +38,12 @@ namespace qinetiq {
         public int receivePort { get; set; } = 11000;
 
         public int destPort { get; set; } = 11001;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private bool isConnected = false;
+
+        private bool sendingInProgress = false;
 
         private Dictionary<string, Func<string?>> valids;
 
@@ -70,6 +95,85 @@ namespace qinetiq {
             
             get { return validConn.Values.ToList().Where(x => x != null).DefaultIfEmpty(null).First(); }
         
+        }
+
+
+        public bool allowConnect { get { return Error == null && !isConnected; } }
+
+
+        public bool allowDisconnect {
+
+            get { return isConnected; }
+
+        }
+
+
+        public bool allowSend {
+
+            get { return isConnected && !sendingInProgress; }
+
+        }
+
+
+        public void onConnect() {
+
+            isConnected = true;
+
+        }
+
+
+        public void onDataReceived(string msg) {
+
+            messages.Add(String.Format("Received: %s", msg));
+
+        }
+
+
+        public void onReceiveError(string msg) {
+
+            isConnected = false;
+
+            messages.Add(String.Format("Receive Error: %s", msg));
+
+        }
+
+
+        public void onStartSend() {
+
+            sendingInProgress = true;
+
+        }
+
+
+        public void onDataSent(string msg) {
+
+            sendingInProgress = false;
+
+            messages.Add(String.Format("Sent: %s", msg));
+
+        }
+
+
+        public void onDisconnected() {
+
+            isConnected = false;
+
+        }
+
+
+        public void onSendError(string msg) {
+
+            sendingInProgress = false;
+
+            messages.Add(String.Format("Sending Error: %s", msg));
+
+        }
+
+
+        public void OnPropertyChanged([CallerMemberName] string name=null) {
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
         }
 
 

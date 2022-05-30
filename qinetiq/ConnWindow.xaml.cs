@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Windows.Controls;
 
 
-//TextChanged + Validation.GetHasError(ctrl) for each input and set [connect/cancel/text boxes].IsEnabled accordingly
 namespace qinetiq {
 
 
@@ -15,14 +14,8 @@ namespace qinetiq {
 
         private HandleOpenConnWindow hOpenConnWindow;
 
-        private enum S { INVALID, VALID, CONNECTED }
-
-        private S state;
-
 
         public ConnWindow(IPresenter iPresenter) {
-
-            state = S.INVALID;
 
             InitializeComponent();
 
@@ -46,7 +39,7 @@ namespace qinetiq {
 
         private void cancel(object o, RoutedEventArgs r) {
 
-            //iPresenter.cancel();
+            iPresenter.disconnect();
 
         }
 
@@ -56,10 +49,6 @@ namespace qinetiq {
             receiveTxt.GetBindingExpression(TextBox.TextProperty).UpdateSource();
 
             destTxt.GetBindingExpression(TextBox.TextProperty).UpdateSource();
-
-            bool connValid = iPresenter.model.Error == null;
-
-            return;
 
         }
 
