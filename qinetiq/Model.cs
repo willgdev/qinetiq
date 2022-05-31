@@ -51,7 +51,7 @@ namespace qinetiq {
             
             get { return _allowDisconnect; }
             
-            set {
+            private set {
 
                 _allowDisconnect = value;
 
@@ -61,13 +61,13 @@ namespace qinetiq {
         
         }
 
-        public bool allowSend { get { return !isNotConnected && !sendingInProgress; } }
+        public bool allowSend { get { return !isNotConnected && !sendingInProgress && valids["message"]() == null; } }
 
         public bool isNotConnected {
 
             get { return _isNotConnected; }
 
-            set {
+            private set {
 
                 _isNotConnected = value;
 
@@ -126,6 +126,8 @@ namespace qinetiq {
                 if (validConn.ContainsKey(id)) validConn[id] = res;
 
                 OnPropertyChanged("allowConnect");
+
+                OnPropertyChanged("allowSend");
 
                 return res;
             
