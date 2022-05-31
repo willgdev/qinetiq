@@ -73,6 +73,8 @@ namespace qinetiq {
 
                 OnPropertyChanged();
 
+                OnPropertyChanged("allowSend");
+
             }
 
         }
@@ -161,12 +163,20 @@ namespace qinetiq {
         }
 
 
-        public void onStartSend() { sendingInProgress = true; }
+        public void onStartSend() {
+            
+            sendingInProgress = true;
+
+            OnPropertyChanged("allowSend");
+
+        }
 
 
         public void onDataSent(string msg) {
 
             sendingInProgress = false;
+
+            OnPropertyChanged("allowSend");
 
             messages.Add(String.Format("Sent: {0}", msg));
 
@@ -190,6 +200,8 @@ namespace qinetiq {
         public void onSendError(string msg) {
 
             sendingInProgress = false;
+
+            OnPropertyChanged("allowSend");
 
             messages.Add(String.Format("Sending Error: {0}", msg));
 
