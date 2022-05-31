@@ -22,6 +22,8 @@ namespace qinetiq {
 
         void onSendError(string msg);
 
+        void onStartDisconnect();
+
         void onDisconnected();
 
     }
@@ -31,17 +33,39 @@ namespace qinetiq {
 
         public string message { get; set; } = string.Empty;
 
-        public List<string> messages { get; set; }
+        public List<string> messages { get; set; } = new List<string>();
 
-        public string ipAddress { get; set; } = "0.0.0.0";
+        public string ipAddress { get; set; } = "192.168.1.255";
 
         public int receivePort { get; set; } = 11000;
 
         public int destPort { get; set; } = 11001;
 
+        public string Error { get { return validConn.Values.ToList().Where(x => x != null).DefaultIfEmpty(null).First(); } }
+
+        public bool allowConnect { get { return Error == null && isNotConnected; } }
+
+        public bool allowDisconnect {
+            
+            get { return _allowDisconnect; }
+            
+            set {
+
+                _allowDisconnect = value;
+
+                OnPropertyChanged("allowDisconnect");
+                    
+            }
+        
+        }
+
+        public bool allowSend { get { return !isNotConnected && !sendingInProgress; } }
+
+        public bool isNotConnected { get; set; } = true;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private bool isConnected = false;
+        private bool _allowDisconnect = false;
 
         private bool sendingInProgress = false;
 
@@ -70,8 +94,7 @@ namespace qinetiq {
                 }
             };
 
-            validConn =
-                new Dictionary<string, string?> { { "ipAddress", null }, { "receivePort", null }, { "destPort", null } };
+            validConn = new Dictionary<string, string?> { { "ipAddress", null }, { "receivePort", null }, { "destPort", null } };
 
         }
 
@@ -83,7 +106,9 @@ namespace qinetiq {
                 string? res = valids[id]();
 
                 if (validConn.ContainsKey(id)) validConn[id] = res;
-                
+
+                OnPropertyChanged("allowConnect");
+
                 return res;
             
             }
@@ -91,58 +116,36 @@ namespace qinetiq {
         }
 
 
-        public string Error {
-            
-            get { return validConn.Values.ToList().Where(x => x != null).DefaultIfEmpty(null).First(); }
-        
-        }
-
-
-        public bool allowConnect { get { return Error == null && !isConnected; } }
-
-
-        public bool allowDisconnect {
-
-            get { return isConnected; }
-
-        }
-
-
-        public bool allowSend {
-
-            get { return isConnected && !sendingInProgress; }
-
-        }
-
-
         public void onConnect() {
 
-            isConnected = true;
+            isNotConnected = false;
+
+            allowDisconnect = true;
+
+            OnPropertyChanged("allowConnect");
+
+            messages.Add(String.Format("Connected: %s:%s", ipAddress, receivePort));
 
         }
 
 
-        public void onDataReceived(string msg) {
-
-            messages.Add(String.Format("Received: %s", msg));
-
-        }
+        public void onDataReceived(string msg) { messages.Add(String.Format("Received: %s", msg)); }
 
 
         public void onReceiveError(string msg) {
 
-            isConnected = false;
+            isNotConnected = true;
 
-            messages.Add(String.Format("Receive Error: %s", msg));
+            allowDisconnect = false;
 
-        }
+            OnPropertyChanged("allowConnect");
 
-
-        public void onStartSend() {
-
-            sendingInProgress = true;
+            messages.Add(String.Format("Disconnected [Receive Error: %s]", msg));
 
         }
+
+
+        public void onStartSend() { sendingInProgress = true; }
 
 
         public void onDataSent(string msg) {
@@ -154,9 +157,16 @@ namespace qinetiq {
         }
 
 
+        public void onStartDisconnect() { allowDisconnect = false; }
+
+
         public void onDisconnected() {
 
-            isConnected = false;
+            isNotConnected = true;
+
+            OnPropertyChanged("allowConnect");
+
+            messages.Add("Disconnected");
 
         }
 

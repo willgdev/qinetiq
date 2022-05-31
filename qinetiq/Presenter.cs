@@ -91,6 +91,8 @@ namespace qinetiq {
 
         public void disconnect() {
 
+            model.onStartDisconnect();
+
             OnDisconnect();
 
         }

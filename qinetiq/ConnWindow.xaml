@@ -19,11 +19,11 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Margin="0,5,0,0">IP address</Label>
-        <TextBox Grid.Row="0"  Grid.Column="1" Margin="0,5,0,0" Text="{Binding ipAddress, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" Name="ipTxt"></TextBox>
+        <TextBox Grid.Row="0"  Grid.Column="1" Margin="0,5,0,0" Text="{Binding ipAddress, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" Name="ipTxt" TextChanged="onChange" IsEnabled="{Binding isNotConnected}"></TextBox>
         <Label Grid.Row="1" Grid.Column="0" Margin="0,5,0,0">Receive port</Label>
-        <TextBox Grid.Row="1"  Grid.Column="1" Margin="0,5,0,0" Text="{Binding receivePort, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" Name="receiveTxt" TextChanged="onChange"></TextBox>
+        <TextBox Grid.Row="1"  Grid.Column="1" Margin="0,5,0,0" Text="{Binding receivePort, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" Name="receiveTxt" TextChanged="onChange" IsEnabled="{Binding isNotConnected}"></TextBox>
         <Label Grid.Row="2" Grid.Column="0" Margin="0,5,0,0">Destination port</Label>
-        <TextBox Grid.Row="2"  Grid.Column="1" Margin="0,5,0,0"  Text="{Binding destPort, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" Name="destTxt" TextChanged="onChange"></TextBox>
+        <TextBox Grid.Row="2"  Grid.Column="1" Margin="0,5,0,0"  Text="{Binding destPort, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" Name="destTxt" TextChanged="onChange" IsEnabled="{Binding isNotConnected}"></TextBox>
         <Button Grid.Row="3" Grid.Column="1" Margin="0,5,0,0" Click="connect" Name="connectBtn" IsEnabled="{Binding allowConnect}">Connect</Button>
         <Button Grid.Row="4" Grid.Column="1" Margin="0,5,0,0" Click="cancel" Name="cancelBtn" IsEnabled="{Binding allowDisconnect}">Disconnect</Button>
     </Grid>
