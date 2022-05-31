@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
+
 
 namespace qinetiq {
 
@@ -33,7 +35,7 @@ namespace qinetiq {
 
         public string message { get; set; } = string.Empty;
 
-        public List<string> messages { get; set; } = new List<string>();
+        public ObservableCollection<string> messages { get; set; } = new ObservableCollection<string>();
 
         public string ipAddress { get; set; } = "192.168.1.255";
 
@@ -53,7 +55,7 @@ namespace qinetiq {
 
                 _allowDisconnect = value;
 
-                OnPropertyChanged("allowDisconnect");
+                OnPropertyChanged();
                     
             }
         
@@ -61,11 +63,25 @@ namespace qinetiq {
 
         public bool allowSend { get { return !isNotConnected && !sendingInProgress; } }
 
-        public bool isNotConnected { get; set; } = true;
+        public bool isNotConnected {
+
+            get { return _isNotConnected; }
+
+            set {
+
+                _isNotConnected = value;
+
+                OnPropertyChanged();
+
+            }
+
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private bool _allowDisconnect = false;
+
+        private bool _isNotConnected = true;
 
         private bool sendingInProgress = false;
 
@@ -86,11 +102,11 @@ namespace qinetiq {
                 {"ipAddress", () => ipRegex.IsMatch(ipAddress) ? null : "Invalid IP Address"},
                 {"receivePort", () => receivePort > 0 && receivePort <= udpMax && receivePort != destPort 
                     ? null
-                    : String.Format("Port must be < %d and cannot be the same as the destination port.", udpMax)
+                    : String.Format("Port must be < {0} and cannot be the same as the destination port.", udpMax)
                 },
                 {"destPort", () => destPort > 0 && destPort <= udpMax && receivePort != destPort
                     ? null
-                    : String.Format("Port must be < %d and cannot be the same as the receive port.", udpMax)
+                    : String.Format("Port must be < {0} and cannot be the same as the receive port.", udpMax)
                 }
             };
 
@@ -124,12 +140,12 @@ namespace qinetiq {
 
             OnPropertyChanged("allowConnect");
 
-            messages.Add(String.Format("Connected: %s:%s", ipAddress, receivePort));
+            messages.Add(String.Format("Connected: {0}:{1}", ipAddress, receivePort));
 
         }
 
 
-        public void onDataReceived(string msg) { messages.Add(String.Format("Received: %s", msg)); }
+        public void onDataReceived(string msg) { messages.Add(String.Format("Received: {0}", msg)); }
 
 
         public void onReceiveError(string msg) {
@@ -140,7 +156,7 @@ namespace qinetiq {
 
             OnPropertyChanged("allowConnect");
 
-            messages.Add(String.Format("Disconnected [Receive Error: %s]", msg));
+            messages.Add(String.Format("Disconnected [Receive Error: {0}]", msg));
 
         }
 
@@ -152,7 +168,7 @@ namespace qinetiq {
 
             sendingInProgress = false;
 
-            messages.Add(String.Format("Sent: %s", msg));
+            messages.Add(String.Format("Sent: {0}", msg));
 
         }
 
@@ -175,7 +191,7 @@ namespace qinetiq {
 
             sendingInProgress = false;
 
-            messages.Add(String.Format("Sending Error: %s", msg));
+            messages.Add(String.Format("Sending Error: {0}", msg));
 
         }
 

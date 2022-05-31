@@ -6,8 +6,6 @@ using System.Threading;
 using System.Windows;
 
 
-//one thread to receive, another to send on a different port
-//only ONE instance of Connection as destPort and receivePort have to be different
 namespace qinetiq {
 
 
