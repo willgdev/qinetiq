@@ -50,7 +50,7 @@ namespace qinetiq {
         }
 
 
-        public void receive() {
+        private void receive() {
 
             listen = true;
 
@@ -63,7 +63,7 @@ namespace qinetiq {
         }
 
 
-        public void send(string msg) {
+        private void send(string msg) {
 
             Thread sendThread = new Thread(() => sendData(msg));
 
@@ -74,14 +74,14 @@ namespace qinetiq {
         }
 
 
-        public void disconnect() {
+        private void disconnect() {
 
             listen = false;
 
         }
 
 
-        public void close() {
+        private void close() {
 
             iPresenter.OnConnect -= hConnect;
 
