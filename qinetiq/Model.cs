@@ -26,7 +26,7 @@ namespace qinetiq {
 
         void onStartDisconnect();
 
-        void onDisconnected();
+        void onAfterDisconnected();
 
     }
 
@@ -188,7 +188,7 @@ namespace qinetiq {
         public void onStartDisconnect() { allowDisconnect = false; }
 
 
-        public void onDisconnected() {
+        public void onAfterDisconnected() {
 
             isNotConnected = true;
 

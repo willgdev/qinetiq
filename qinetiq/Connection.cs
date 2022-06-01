@@ -106,6 +106,8 @@ namespace qinetiq {
 
                 IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(iPresenter.model.ipAddress), iPresenter.model.receivePort);
 
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onConnected(); }));
+
                 while (listen) {
 
                     try {
@@ -122,7 +124,7 @@ namespace qinetiq {
 
                 }
 
-                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.model.onDisconnected(); }));
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onDisconnected(); }));
 
             }
 

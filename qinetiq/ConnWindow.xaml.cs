@@ -14,6 +14,10 @@ namespace qinetiq {
 
         private HandleOpenConnWindow hOpenConnWindow;
 
+        private HandleConnected hConnected;
+
+        private HandleDisconnected hDisconnected;
+
 
         public ConnWindow(IPresenter iPresenter) {
 
@@ -25,7 +29,15 @@ namespace qinetiq {
 
             hOpenConnWindow = new HandleOpenConnWindow(show);
 
+            hConnected = new HandleConnected(hide);
+
+            hDisconnected = new HandleDisconnected(hide);
+
             this.iPresenter.OnOpenConnWindow += hOpenConnWindow;
+
+            this.iPresenter.OnConnected += hConnected;
+
+            this.iPresenter.OnDisconnected += hDisconnected;
 
         }
 
@@ -60,6 +72,13 @@ namespace qinetiq {
         }
 
 
+        private void hide() {
+
+            Close();
+
+        }
+
+
         protected override void OnClosing(CancelEventArgs c) {
 
             c.Cancel = true;
@@ -72,6 +91,10 @@ namespace qinetiq {
         protected override void OnClosed(EventArgs e) {
 
             iPresenter.OnOpenConnWindow -= hOpenConnWindow;
+
+            iPresenter.OnConnected -= hConnected;
+
+            iPresenter.OnDisconnected -= hDisconnected;
 
             base.OnClosed(e);
 

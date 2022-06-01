@@ -7,9 +7,13 @@ namespace qinetiq {
 
     public delegate void HandleConnect();
 
+    public delegate void HandleConnected();
+
     public delegate void HandleStartSend(string msg);
 
     public delegate void HandleDisconnect();
+
+    public delegate void HandleDisconnected();
 
     public delegate void HandleCloseApp();
 
@@ -19,6 +23,10 @@ namespace qinetiq {
         void openConnWindow();
 
         void connect();
+
+        void onConnected();
+
+        void onDisconnected();
 
         void disconnect();
 
@@ -30,9 +38,13 @@ namespace qinetiq {
 
         event HandleConnect OnConnect;
 
+        event HandleConnected OnConnected;
+
         event HandleStartSend OnStartSend;
 
         event HandleDisconnect OnDisconnect;
+
+        event HandleDisconnected OnDisconnected;
 
         event HandleCloseApp OnCloseApp;
 
@@ -48,9 +60,13 @@ namespace qinetiq {
 
         public event HandleConnect OnConnect;
 
+        public event HandleConnected OnConnected;
+
         public event HandleStartSend OnStartSend;
 
         public event HandleDisconnect OnDisconnect;
+
+        public event HandleDisconnected OnDisconnected;
 
         public event HandleCloseApp OnCloseApp;
 
@@ -80,6 +96,13 @@ namespace qinetiq {
         }
 
 
+        public void onConnected() {
+
+            OnConnected();
+
+        }
+
+
         public void sendData() {
 
             model.onStartSend();
@@ -94,6 +117,15 @@ namespace qinetiq {
             model.onStartDisconnect();
 
             OnDisconnect();
+
+        }
+
+
+        public void onDisconnected() {
+
+            model.onAfterDisconnected();
+
+            OnDisconnected();
 
         }
 
