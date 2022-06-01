@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:qinetiq"
         mc:Ignorable="d"
-        Title="Message App" Height="180" Width="260">
+        Title="Message App" Height="540" Width="780">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
