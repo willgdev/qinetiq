@@ -185,7 +185,13 @@ namespace qinetiq {
         }
 
 
-        public void onStartDisconnect() { allowDisconnect = false; }
+        public void onStartDisconnect() {
+            
+            allowDisconnect = false;
+
+            messages.Add("Disconnecting...");
+        
+        }
 
 
         public void onAfterDisconnected() {

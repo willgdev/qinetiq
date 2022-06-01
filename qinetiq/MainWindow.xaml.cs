@@ -1,6 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 
 
 namespace qinetiq {
@@ -11,12 +11,20 @@ namespace qinetiq {
 
         private IPresenter iPresenter;
 
+        private HandleDisconnected hDisconnected;
+
+        private bool shutdown;
+
 
         public MainWindow(IPresenter iPresenter) {
 
             this.iPresenter = iPresenter;
 
             DataContext = iPresenter.model;
+
+            hDisconnected = new HandleDisconnected(onDisconnected);
+
+            this.iPresenter.OnDisconnected += hDisconnected;
 
             InitializeComponent();
 
@@ -37,7 +45,31 @@ namespace qinetiq {
         }
 
 
+        private void onDisconnected() {
+
+            if (shutdown) Close();
+
+        }
+
+
+        protected override void OnClosing(CancelEventArgs c) {
+
+            shutdown = true;
+
+            if (!iPresenter.model.isNotConnected) {
+
+                c.Cancel = true;
+
+                iPresenter.disconnect();
+
+            }
+
+        }
+
+
         protected override void OnClosed(EventArgs e) {
+
+            iPresenter.OnDisconnected -= hDisconnected;
 
             iPresenter.closeApp();
 
