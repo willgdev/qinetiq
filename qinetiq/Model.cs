@@ -10,30 +10,21 @@ using System.Collections.ObjectModel;
 namespace qinetiq {
 
 
-    public interface IConnection {
+    public class Model : IDataErrorInfo, INotifyPropertyChanged {
 
-        void onConnect();
+        public string message {
 
-        void onDataReceived(string msg);
+            get { return _message; }
 
-        void onAfterReceiveError(string error);
+            set {
 
-        void onStartSend();
+                _message = value;
 
-        void onDataSent(string msg);
+                OnPropertyChanged();
 
-        void onSendError(string msg);
+            }
 
-        void onStartDisconnect();
-
-        void onAfterDisconnected();
-
-    }
-
-
-    public class Model : IDataErrorInfo, IConnection, INotifyPropertyChanged {
-
-        public string message { get; set; } = string.Empty;
+        }
 
         public ObservableCollection<string> messages { get; set; } = new ObservableCollection<string>();
 
@@ -48,17 +39,17 @@ namespace qinetiq {
         public bool allowConnect { get { return Error == null && isNotConnected; } }
 
         public bool allowDisconnect {
-            
+
             get { return _allowDisconnect; }
-            
+
             private set {
 
                 _allowDisconnect = value;
 
                 OnPropertyChanged();
-                    
+
             }
-        
+
         }
 
         public bool allowSend { get { return !isNotConnected && !sendingInProgress && valids["message"]() == null; } }
@@ -81,6 +72,10 @@ namespace qinetiq {
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public int maxMsgLength { get; } = 100;
+
+        private string _message = string.Empty;
+
         private bool _allowDisconnect = false;
 
         private bool _isNotConnected = true;
@@ -99,16 +94,16 @@ namespace qinetiq {
         public Model () {
 
             valids = new Dictionary<string, Func<string?>> {
-                {"message", () => message.Trim().Length > 0 && message.Length < 100 ? null : "Enter text."},
+                {"message", () => message.Trim().Length > 0 && message.Length < maxMsgLength ? null : "Enter text."},
                 {"messages", () => null},
                 {"ipAddress", () => ipRegex.IsMatch(ipAddress) ? null : "Invalid IP Address"},
                 {"receivePort", () => receivePort > 0 && receivePort <= udpMax && receivePort != destPort 
                     ? null
-                    : String.Format("Port must be < {0} and cannot be the same as the destination port.", udpMax)
+                    : string.Format("Port must be < {0} and cannot be the same as the destination port.", udpMax)
                 },
                 {"destPort", () => destPort > 0 && destPort <= udpMax && receivePort != destPort
                     ? null
-                    : String.Format("Port must be < {0} and cannot be the same as the receive port.", udpMax)
+                    : string.Format("Port must be < {0} and cannot be the same as the receive port.", udpMax)
                 }
             };
 
@@ -144,12 +139,12 @@ namespace qinetiq {
 
             OnPropertyChanged("allowConnect");
 
-            messages.Add(String.Format("Connected: {0}:{1}", ipAddress, receivePort));
+            messages.Add(string.Format("Connected: {0}:{1}", ipAddress, receivePort));
 
         }
 
 
-        public void onDataReceived(string msg) { messages.Add(String.Format("Received: {0}", msg)); }
+        public void onDataReceived(string msg) { messages.Add(string.Format("Received: {0}", msg)); }
 
 
         public void onAfterReceiveError(string msg) {
@@ -160,7 +155,7 @@ namespace qinetiq {
 
             OnPropertyChanged("allowConnect");
 
-            messages.Add(String.Format("Disconnected [Receive Error: {0}]", msg));
+            messages.Add(string.Format("Disconnected [Receive Error: {0}]", msg));
 
         }
 
@@ -180,7 +175,9 @@ namespace qinetiq {
 
             OnPropertyChanged("allowSend");
 
-            messages.Add(String.Format("Sent: {0}", msg));
+            messages.Add(string.Format("Sent: {0}", msg));
+
+            message = string.Empty;
 
         }
 
@@ -211,7 +208,7 @@ namespace qinetiq {
 
             OnPropertyChanged("allowSend");
 
-            messages.Add(String.Format("Sending Error: {0}", msg));
+            messages.Add(string.Format("Sending Error: {0}", msg));
 
         }
 

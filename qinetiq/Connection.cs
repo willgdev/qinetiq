@@ -104,6 +104,8 @@ namespace qinetiq {
 
                 udpClient.Client.ReceiveTimeout = udpTimeout;
 
+                udpClient.Client.ReceiveBufferSize = iPresenter.model.maxMsgLength * 4;
+
                 IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(iPresenter.model.ipAddress), iPresenter.model.receivePort);
 
                 Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onConnected(); }));
@@ -114,8 +116,13 @@ namespace qinetiq {
 
                         byte[] data = udpClient.Receive(ref ipEndPoint);
 
+                        string utf8Data = Encoding.UTF8.GetString(data);
+
+                        if (utf8Data.Length > iPresenter.model.maxMsgLength)
+                            throw new ArgumentException("Received message is too long");
+
                         Application.Current.Dispatcher.Invoke(
-                            new Action(() => { iPresenter.model.onDataReceived(Encoding.Default.GetString(data)); })
+                            new Action(() => { iPresenter.model.onDataReceived(Encoding.UTF8.GetString(data)); })
                         );
 
                     }
@@ -131,12 +138,15 @@ namespace qinetiq {
             catch (Exception e) when (
                 e is SocketException ||
                 e is ObjectDisposedException ||
-                e is ThreadInterruptedException
+                e is ThreadInterruptedException ||
+                e is ArgumentException ||
+                e is ArgumentNullException ||
+                e is DecoderFallbackException
             ) {
 
                 listen = false;
 
-                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onReceiveError(e.GetType().ToString()); }));
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onReceiveError(e.Message); }));
 
             }
 

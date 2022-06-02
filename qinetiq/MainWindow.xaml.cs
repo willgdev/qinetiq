@@ -80,7 +80,7 @@ namespace qinetiq {
 
             shutdown = Shutdown.CALLED;
 
-            if (!iPresenter.model.isNotConnected) {
+            if (iPresenter.model.allowDisconnect) {
 
                 c.Cancel = true;
 
