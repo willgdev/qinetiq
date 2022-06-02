@@ -122,7 +122,7 @@ namespace qinetiq {
                             throw new ArgumentException("Received message is too long");
 
                         Application.Current.Dispatcher.Invoke(
-                            new Action(() => { iPresenter.model.onDataReceived(Encoding.UTF8.GetString(data)); })
+                            new Action(() => { iPresenter.model.onDataReceived(utf8Data); })
                         );
 
                     }
