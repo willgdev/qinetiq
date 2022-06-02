@@ -136,9 +136,7 @@ namespace qinetiq {
 
                 listen = false;
 
-                Application.Current.Dispatcher.Invoke(new Action(() => {
-                    iPresenter.model.onReceiveError(e.GetType().ToString());
-                }));
+                Application.Current.Dispatcher.Invoke(new Action(() => { iPresenter.onReceiveError(e.GetType().ToString()); }));
 
             }
 

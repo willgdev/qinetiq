@@ -16,7 +16,7 @@ namespace qinetiq {
 
         void onDataReceived(string msg);
 
-        void onReceiveError(string error);
+        void onAfterReceiveError(string error);
 
         void onStartSend();
 
@@ -99,7 +99,7 @@ namespace qinetiq {
         public Model () {
 
             valids = new Dictionary<string, Func<string?>> {
-                {"message", () => message.Trim().Length > 0 ? null : "Enter text."},
+                {"message", () => message.Trim().Length > 0 && message.Length < 100 ? null : "Enter text."},
                 {"messages", () => null},
                 {"ipAddress", () => ipRegex.IsMatch(ipAddress) ? null : "Invalid IP Address"},
                 {"receivePort", () => receivePort > 0 && receivePort <= udpMax && receivePort != destPort 
@@ -152,7 +152,7 @@ namespace qinetiq {
         public void onDataReceived(string msg) { messages.Add(String.Format("Received: {0}", msg)); }
 
 
-        public void onReceiveError(string msg) {
+        public void onAfterReceiveError(string msg) {
 
             isNotConnected = true;
 

@@ -13,7 +13,11 @@ namespace qinetiq {
 
         private HandleDisconnected hDisconnected;
 
-        private bool shutdown;
+        private HandleReceiveError hReceiveError;
+
+        private enum Shutdown { NONE, CALLED, CONFIRMED };
+
+        private Shutdown shutdown = Shutdown.NONE;
 
 
         public MainWindow(IPresenter iPresenter) {
@@ -24,7 +28,11 @@ namespace qinetiq {
 
             hDisconnected = new HandleDisconnected(onDisconnected);
 
+            hReceiveError = new HandleReceiveError(onDisconnected);
+
             this.iPresenter.OnDisconnected += hDisconnected;
+
+            this.iPresenter.OnReceiveError += hReceiveError;
 
             InitializeComponent();
 
@@ -47,14 +55,30 @@ namespace qinetiq {
 
         private void onDisconnected() {
 
-            if (shutdown) Close();
+            if (shutdown == Shutdown.CALLED) {
+
+                shutdown = Shutdown.CONFIRMED;
+
+                Close();
+
+            }
 
         }
 
 
         protected override void OnClosing(CancelEventArgs c) {
 
-            shutdown = true;
+            if (shutdown == Shutdown.CONFIRMED) return;
+
+            if (shutdown == Shutdown.CALLED) {
+
+                c.Cancel = true;
+
+                return;
+
+            }
+
+            shutdown = Shutdown.CALLED;
 
             if (!iPresenter.model.isNotConnected) {
 
@@ -70,6 +94,8 @@ namespace qinetiq {
         protected override void OnClosed(EventArgs e) {
 
             iPresenter.OnDisconnected -= hDisconnected;
+
+            iPresenter.OnReceiveError -= hReceiveError;
 
             iPresenter.closeApp();
 

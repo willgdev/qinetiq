@@ -11,6 +11,8 @@ namespace qinetiq {
 
     public delegate void HandleStartSend(string msg);
 
+    public delegate void HandleReceiveError();
+
     public delegate void HandleDisconnect();
 
     public delegate void HandleDisconnected();
@@ -25,6 +27,8 @@ namespace qinetiq {
         void connect();
 
         void onConnected();
+
+        void onReceiveError(string msg);
 
         void onDisconnected();
 
@@ -41,6 +45,8 @@ namespace qinetiq {
         event HandleConnected OnConnected;
 
         event HandleStartSend OnStartSend;
+
+        event HandleReceiveError OnReceiveError;
 
         event HandleDisconnect OnDisconnect;
 
@@ -65,6 +71,8 @@ namespace qinetiq {
         public event HandleStartSend OnStartSend;
 
         public event HandleDisconnect OnDisconnect;
+
+        public event HandleReceiveError OnReceiveError;
 
         public event HandleDisconnected OnDisconnected;
 
@@ -117,6 +125,15 @@ namespace qinetiq {
             model.onStartDisconnect();
 
             OnDisconnect();
+
+        }
+
+
+        public void onReceiveError(string msg) {
+
+            model.onAfterReceiveError(msg);
+
+            OnReceiveError();
 
         }
 
