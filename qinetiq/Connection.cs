@@ -183,7 +183,13 @@ namespace qinetiq {
             
             }
 
-            if (socket != null) socket.Close();
+            if (socket != null) {
+
+                socket.Shutdown(SocketShutdown.Both);
+
+                socket.Close();
+
+            }
 
         }
 
