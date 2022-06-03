@@ -59,7 +59,7 @@ namespace qinetiq {
     }
 
 
-    class Presenter : IPresenter {
+    public class Presenter : IPresenter {
 
 
         public event HandleOpenConnWindow OnOpenConnWindow;
